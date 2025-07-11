@@ -18,7 +18,50 @@ from pyworkflow.utils.path import moveFile
 
 class ProtChemToxCSM(EMProtocol):
 
-    """Toxicity prediction of small ligands with toxCSM"""
+    """Toxicity prediction of small ligands with toxCSM
+    
+    User IA Manual: ToxCSM Protocol
+
+The ToxCSM protocol is used to predict a variety of toxicity-related endpoints
+for small molecules based on their chemical structure. It integrates predictive
+models trained using graph-based signatures and machine learning techniques to
+estimate the likelihood that a compound will exhibit toxicological effects in
+biological systems. This makes it a valuable tool in early-stage drug discovery,
+where toxicity screening is critical for compound prioritization.
+
+To begin, the user must provide a set of molecular structures in a supported
+format such as SDF or MOL. These structures represent the compounds to be
+evaluated and should include appropriate atom and bond information for proper
+processing. The protocol automatically extracts molecular features and encodes
+them into graph-based representations compatible with the ToxCSM predictive
+framework.
+
+The user can specify which toxicity endpoints to evaluate. ToxCSM supports
+multiple models, including predictions for hepatotoxicity, hERG inhibition,
+mutagenicity (AMES test), LD50, and environmental toxicity measures. Depending
+on the selected endpoints, each compound is processed through the corresponding
+predictive pipeline. No additional experimental data is required, as predictions
+are based solely on structure-derived descriptors.
+
+An optional configuration allows users to define thresholds or cutoffs for
+classification tasks, distinguishing toxic from non-toxic predictions. This is
+useful when filtering compounds for safety profiling. All predictions are
+returned as probability scores, classifications, or quantitative values
+depending on the endpoint type.
+
+Upon completion, the protocol outputs a table summarizing each compound's
+toxicity profile. The results include raw prediction values and binary
+classifications where applicable. These outputs can be integrated with other
+compound evaluation metrics, such as docking scores, synthetic accessibility,
+or bioactivity predictions, and are fully compatible with downstream workflows
+in Scipion-Chem.
+
+In summary, the ToxCSM protocol provides a fast, structure-based method for
+estimating the toxicological risk of small molecules. It enables early
+identification of problematic compounds and supports rational selection based
+on safety, helping to streamline decision-making in computational drug design.
+    
+    """
     
     _label = 'toxicity prediction of small ligands'
     def __init__(self, **kwargs):
