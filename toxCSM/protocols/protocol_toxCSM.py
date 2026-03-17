@@ -20,47 +20,100 @@ class ProtChemToxCSM(EMProtocol):
 
     """Toxicity prediction of small ligands with toxCSM
     
-    User IA Manual: ToxCSM Protocol
+    AI Generated:
 
-The ToxCSM protocol is used to predict a variety of toxicity-related endpoints
-for small molecules based on their chemical structure. It integrates predictive
-models trained using graph-based signatures and machine learning techniques to
-estimate the likelihood that a compound will exhibit toxicological effects in
-biological systems. This makes it a valuable tool in early-stage drug discovery,
-where toxicity screening is critical for compound prioritization.
+        ProtChemToxCSM - User Manual
 
-To begin, the user must provide a set of molecular structures in a supported
-format such as SDF or MOL. These structures represent the compounds to be
-evaluated and should include appropriate atom and bond information for proper
-processing. The protocol automatically extracts molecular features and encodes
-them into graph-based representations compatible with the ToxCSM predictive
-framework.
+        Overview
+        --------
+        The ProtChemToxCSM protocol performs structure-based toxicity prediction
+        for small molecules using the toxCSM web service. It applies graph-based
+        signatures and machine learning models to estimate multiple toxicological
+        endpoints directly from the chemical structure of a compound.
 
-The user can specify which toxicity endpoints to evaluate. ToxCSM supports
-multiple models, including predictions for hepatotoxicity, hERG inhibition,
-mutagenicity (AMES test), LD50, and environmental toxicity measures. Depending
-on the selected endpoints, each compound is processed through the corresponding
-predictive pipeline. No additional experimental data is required, as predictions
-are based solely on structure-derived descriptors.
+        This protocol is designed for early-stage drug discovery workflows, where
+        rapid toxicity screening is essential to prioritize safe and viable
+        candidates before experimental validation.
 
-An optional configuration allows users to define thresholds or cutoffs for
-classification tasks, distinguishing toxic from non-toxic predictions. This is
-useful when filtering compounds for safety profiling. All predictions are
-returned as probability scores, classifications, or quantitative values
-depending on the endpoint type.
+        Input Requirements
+        ------------------
+        1. **Molecule Set**:
+           - A SetOfSmallMolecules object containing the compounds to analyze.
+           - Molecules must include valid structural information (e.g., SDF, MOL).
 
-Upon completion, the protocol outputs a table summarizing each compound's
-toxicity profile. The results include raw prediction values and binary
-classifications where applicable. These outputs can be integrated with other
-compound evaluation metrics, such as docking scores, synthetic accessibility,
-or bioactivity predictions, and are fully compatible with downstream workflows
-in Scipion-Chem.
+        2. **Ligand Selection**:
+           - A specific ligand name must be provided.
+           - The protocol extracts the corresponding molecule from the input set.
 
-In summary, the ToxCSM protocol provides a fast, structure-based method for
-estimating the toxicological risk of small molecules. It enables early
-identification of problematic compounds and supports rational selection based
-on safety, helping to streamline decision-making in computational drug design.
-    
+        3. **Prediction Type**:
+           - Defines the toxicity category to evaluate:
+             - stress_response
+             - nuclear_response
+             - environmental
+             - organic
+             - human_dose_response
+             - genomic
+             - all (default; runs all available models)
+
+        Workflow
+        --------
+        1. **Ligand selection**:
+           - The protocol searches the input molecule set for the selected ligand.
+           - The corresponding structure file is retrieved.
+
+        2. **SMILES generation**:
+           - The molecule is converted into a SMILES representation using RDKit.
+           - This representation is required for toxCSM predictions.
+
+        3. **Job submission**:
+           - The SMILES string and selected prediction type are sent to the toxCSM API.
+           - A unique job ID is returned and stored.
+
+        4. **Job tracking**:
+           - The job ID is saved locally for reproducibility and tracking.
+
+        5. **Result retrieval**:
+           - After a waiting period, results are retrieved from the toxCSM server.
+           - Predictions are returned in JSON format.
+
+        6. **Result storage**:
+           - The retrieved results are saved as a JSON file for downstream analysis.
+
+        Outputs
+        -------
+        - **toxCSM_results.json**:
+          - Contains toxicity predictions for the selected ligand.
+          - Includes probabilities, classifications, or quantitative values
+            depending on the endpoint.
+
+        - **job_id.txt**:
+          - Stores the unique identifier of the submitted toxCSM job.
+          - Useful for reproducibility and external tracking.
+
+        Validation & Warnings
+        ---------------------
+        - Ensure that the selected ligand exists in the input molecule set.
+        - Molecule files must be structurally valid for SMILES conversion.
+        - Internet connection is required to access the toxCSM API.
+        - If the API request fails, the protocol raises an exception.
+        - The waiting time for results is fixed and may not reflect actual
+          server processing time.
+
+        Practical Recommendations
+        -------------------------
+        - Use the "all" prediction type for a comprehensive toxicity profile.
+        - Use specific prediction types to reduce runtime and focus analysis.
+        - Verify SMILES correctness if unexpected results occur.
+        - Combine toxicity results with docking, ADMET, or activity predictions
+          for better compound prioritization.
+
+        Final Perspective
+        -----------------
+        ProtChemToxCSM provides a fast and automated way to assess the
+        toxicological risk of small molecules using structure-based predictions.
+        By integrating toxCSM into Scipion-Chem workflows, users can efficiently
+        filter unsafe compounds and support decision-making in computational
+        drug discovery pipelines.
     """
     
     _label = 'toxicity prediction of small ligands'
